@@ -1,0 +1,29 @@
+{
+	"name": "bashka/bricks_business_atol54",
+	"description": "Пакет для формирования запросов согласно протоколу \"Атол Онлайн\"",
+	"type": "library",
+	"license": "MIT",
+	"authors": [
+	    {
+	        "name": "Artur Sh. Mamedbekov",
+	        "email": "Artur-Mamedbekov@yandex.ru"
+	    }
+	],
+	"require": {
+		"php": ">= 5.5.0 || ^7.0",
+		"ext-mbstring": "*"
+	},
+	"autoload": {
+	    "psr-4": {
+	  	 	"Bricks\\Business\\Atol54\\": "src/"
+	    }
+	},
+	"require-dev": {
+		"phpunit/PHPUnit": "^6.0"
+	},
+	"autoload-dev": {
+	    "psr-4": {
+	  	  	"Bricks\\Business\\Atol54\\UnitTest\\": "test/"
+	    }
+	}
+}
