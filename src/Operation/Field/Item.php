@@ -9,36 +9,32 @@ use Bricks\Business\Atol54\Exception\InvalidArgumentException;
  *
  * @author Artur Sh. Mamedbekov
  */
-class Item implements JsonSerializableInterface{
-  /**
-   * Без НДС.
-   */
-  const TAX_NO = 'none';
+class Item implements JsonSerializableInterface
+{
+    /**
+     * Типы Оплаты
+     */
+    const PAYMENT_FULL_PREPAYMENT = 'full_prepayment';
+    const PAYMENT_PREPAYMENT = 'prepayment';
+    const PAYMENT_ADVANCE = 'advance';
+    const PAYMENT_FULL_PAYMENT = 'full_payment';
+    const PAYMENT_PARTIAL_PAYMENT = 'partial_payment';
+    const PAYMENT_CREDIT = 'credit';
+    const PAYMENT_CREDIT_PAYMENT = 'credit_payment';
 
-  /**
-   * Ставка НДС 0%.
-   */
-  const TAX_0 = 'vat0';
-
-  /**
-   * Ставка НДС 10%.
-   */
-  const TAX_10 = 'vat10';
-
-  /**
-   * Ставка НДС 18%.
-   */
-  const TAX_18 = 'vat18';
-
-  /**
-   * Ставка НДС 10/110.
-   */
-  const TAX_10_110 = 'vat110';
-
-  /**
-   * Ставка НДС 18/118.
-   */
-  const TAX_18_118 = 'vat118';
+    const PAYMENT_METHODS = [
+        self::PAYMENT_FULL_PREPAYMENT,
+        self::PAYMENT_PREPAYMENT,
+        self::PAYMENT_ADVANCE,
+        self::PAYMENT_FULL_PAYMENT,
+        self::PAYMENT_PARTIAL_PAYMENT,
+        self::PAYMENT_CREDIT,
+        self::PAYMENT_CREDIT_PAYMENT
+    ];
+    /**
+     * Тип Оплаты
+     */
+    private $paymentMethod;
 
   /**
    * @var string Название товара.
@@ -61,37 +57,21 @@ class Item implements JsonSerializableInterface{
   private $sum;
 
   /**
-   * @var string Ставка НДС.
+   * @var Vat Атрибуты ставки НДС.
    *
-   * @see self::TAX_*
    */
-  private $tax;
+  private $vat;
 
-  /**
-   * @return string[] Допустимые значения параметра tax.
-   */
-  public static function getTaxValues(){
-    return [
-      self::TAX_NO,
-      self::TAX_0,
-      self::TAX_10,
-      self::TAX_18,
-      self::TAX_10_110,
-      self::TAX_18_118,
-    ];
-  }
-
-  /**
-   * @param string $name Название товара.
-   * @param float|int|string $quantity Количество продукта в заказе.
-   * @param float|int|string $price Стоимость за единицу продукта.
-   * @param string $tax Ставка НДС.
-   *
-   * @throws InvalidArgumentException
-   *
-   * @see self::TAX_*
-   */
-  public function __construct($name, $quantity, $price, $tax){
+    /**
+     * @param string $name Название товара.
+     * @param float|int|string $quantity Количество продукта в заказе.
+     * @param float|int|string $price Стоимость за единицу продукта.
+     * @param Vat $vat Ставка НДС.
+     * @param string $paymentMethod
+     *
+     * @throws InvalidArgumentException
+     */
+    public function __construct($name, $quantity, $price, $vat, $paymentMethod = self::PAYMENT_FULL_PREPAYMENT){
     if(!is_string($name)){
       throw InvalidArgumentException::fromParam('name', 'string', $name);
     }
@@ -102,26 +82,28 @@ class Item implements JsonSerializableInterface{
         $nameLen
       ));
     }
+
     $this->name = $name;
-    if(!is_string($quantity) && !is_int($quantity) && !is_float($quantity)){
+    if (!is_string($quantity) && !is_int($quantity) && !is_float($quantity)){
       throw InvalidArgumentException::fromParam('quantity', 'float|int|string', $quantity);
     }
     $this->quantity = (float) $quantity;
-    if(!is_string($price) && !is_int($price) && !is_float($price)){
+
+    if (!is_string($price) && !is_int($price) && !is_float($price)){
       throw InvalidArgumentException::fromParam('price', 'float|int|string', $price);
     }
+
+    if (!in_array($paymentMethod, self::PAYMENT_METHODS)) {
+        throw InvalidArgumentException::fromParam(
+            'payment_method',
+            implode('|', self::PAYMENT_METHODS),
+            $paymentMethod
+        );
+    }
     $this->price = (float) $price;
-    if(!is_string($tax)){
-      throw InvalidArgumentException::fromParam('tax', 'string', $tax);
-    }
-    if(!in_array($tax, self::getTaxValues())){
-      throw new InvalidArgumentException(sprintf(
-        'The tax should be "none|vat0|vat10|vat18|vat110|vat118", %s given',
-        $tax
-      ));
-    }
-    $this->tax = $tax;
+    $this->vat = $vat;
     $this->sum = $this->quantity * $this->price;
+    $this->paymentMethod = $paymentMethod;
   }
 
   /**
@@ -145,18 +127,25 @@ class Item implements JsonSerializableInterface{
     return $this->quantity;
   }
 
-  /**
-   * @return float Суммарная стоимость продукта в рублях.
-   */
-  public function getSum(){
-    return $this->sum;
-  }
+    /**
+     * @return float Суммарная стоимость продукта в рублях.
+     */
+    public function getSum(){
+        return $this->sum;
+    }
+
+    /**
+     * @return string Тип Оплаты
+     */
+    public function getPaymentMethod(){
+        return $this->paymentMethod;
+    }
 
   /**
-   * @return int Ставка НДС.
+   * @return Vat Ставка НДС.
    */
-  public function getTax(){
-    return $this->tax;
+  public function getVat(){
+    return $this->vat;
   }
 
   /**
@@ -164,12 +153,13 @@ class Item implements JsonSerializableInterface{
    */
   public function toJson(){
     return sprintf(
-      '{"name":"%s","quantity":%01.3f,"price":%01.2f,"sum":%01.2f,"tax":"%s"}',
+      '{"name":"%s","quantity":%01.3f,"price":%01.2f,"sum":%01.2f,"payment_method":"%s","vat":%s}',
       addcslashes(addcslashes($this->name, '/'), '"'),
       $this->quantity,
       $this->price,
       $this->sum,
-      $this->tax
+      $this->paymentMethod,
+      $this->vat->toJson()
     );
   }
 }

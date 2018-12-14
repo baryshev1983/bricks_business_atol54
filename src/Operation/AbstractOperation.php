@@ -24,11 +24,6 @@ abstract class AbstractOperation implements JsonSerializableInterface{
   private $receipt;
 
   /**
-   * @var Service Служебные данные.
-   */
-  private $service;
-
-  /**
    * @var DateTime Дата и время формирования документа во внешней системе.
    */
   private $timestamp;
@@ -36,13 +31,12 @@ abstract class AbstractOperation implements JsonSerializableInterface{
   /**
    * @param string $externalId Идентификатор документа во внешней системе.
    * @param Receipt $receipt Чек.
-   * @param Service $service Служебные данные.
-   * @param DateTime $timestamp [optional] Дата и время формирования документа 
+   * @param DateTime $timestamp [optional] Дата и время формирования документа
    * во внешней системе.
    *
    * @throws InvalidArgumentException
    */
-  public function __construct($externalId, Receipt $receipt, Service $service, DateTime $timestamp = null){
+  public function __construct($externalId, Receipt $receipt, DateTime $timestamp = null){
     if(!is_string($externalId)){
       throw InvalidArgumentException::fromParam('externalId', 'string', $externalId);
     }
@@ -55,7 +49,6 @@ abstract class AbstractOperation implements JsonSerializableInterface{
     }
     $this->externalId = $externalId;
     $this->receipt = $receipt;
-    $this->service = $service;
     if(is_null($timestamp)){
       $timestamp = new DateTime;
     }
@@ -77,13 +70,6 @@ abstract class AbstractOperation implements JsonSerializableInterface{
   }
 
   /**
-   * @return Service Служебные данные.
-   */
-  public function getService(){
-    return $this->service;
-  }
-
-  /**
    * @return DateTime Дата и время формирования документа во внешней системе.
    */
   public function getTimestamp(){
@@ -95,10 +81,9 @@ abstract class AbstractOperation implements JsonSerializableInterface{
    */
   public function toJson(){
     return sprintf(
-      '{"external_id":"%s","receipt":%s,"service":%s,"timestamp":"%s"}',
+      '{"external_id":"%s","receipt":%s,"timestamp":"%s"}',
       $this->externalId,
       $this->receipt->toJson(),
-      $this->service->toJson(),
       $this->timestamp->format('d.m.Y H:i:s')
     );
   }

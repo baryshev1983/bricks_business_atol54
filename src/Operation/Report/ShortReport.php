@@ -46,29 +46,13 @@ class ShortReport extends AbstractReport{
       $json = json_decode($json);
     }
 
-    if(!property_exists($json, 'error')){
-      throw new BadResponseException('Required parameter "error" not found');
-    }
-
-    if(is_null($json->error)){
-      if(!property_exists($json, 'uuid')){
-        throw new BadResponseException('Required parameter "uuid" not found');
-      }
-      if(!property_exists($json, 'timestamp')){
-        throw new BadResponseException('Required parameter "timestamp" not found');
-      }
-      if(!property_exists($json, 'status')){
-        throw new BadResponseException('Required parameter "status" not found');
-      }
-
+    if (!isset($json->error) || is_null($json->error) ) {
       return new self($json->uuid, new DateTime($json->timestamp), $json->status);
-    }
-    else{
+    } else {
       if(!property_exists($json->error, 'code')){
         throw new BadResponseException('Required parameter "error.code" not found');
-      }
-
-      throw AbstractReport::errorToException((int) $json->error->code);
+    }
+      throw AbstractReport::errorToException($json->error->code);
     }
   }
 
