@@ -7,9 +7,9 @@ use Bricks\Business\Atol54\Exception\InvalidArgumentException;
 /**
  * Атрибуты чека.
  *
- * @author Artur Sh. Mamedbekov
+ * @author Vladimir Baryshev
  */
-class Attributes implements JsonSerializableInterface{
+class Company implements JsonSerializableInterface{
   /**
    * Общая.
    */
@@ -53,9 +53,14 @@ class Attributes implements JsonSerializableInterface{
   private $email;
 
   /**
-   * @var string|null Контактный телефон покупателя.
+   * @var string|null INN компании
    */
-  private $phone;
+  private $inn;
+
+    /**
+     * @var string
+     */
+    private $paymentAddress;
 
   /**
    * @return string[] Допустимые значения параметра sno.
@@ -72,15 +77,13 @@ class Attributes implements JsonSerializableInterface{
   }
 
   /**
-   * @param string $sno Система налогообложения магазина.
-   * @param string $email [optional] Контактный email покупателя.
-   * @param string $phone [optional] Контактный телефон покупателя.
-   *
-   * @throws InvalidArgumentException
-   *
-   * @see self::SNO_*
-   */
-  public function __construct($sno, $email = null, $phone = null){
+  * Company constructor.
+  * @param $sno
+  * @param $email
+  * @param $inn
+  * @param $paymentAddress
+  */
+  public function __construct($sno, $email, $inn, $paymentAddress){
     if(!is_string($sno)){
       throw InvalidArgumentException::fromParam('sno', 'string', $sno);
     }
@@ -101,19 +104,17 @@ class Attributes implements JsonSerializableInterface{
       }
       $this->email = $email;
     }
-    if(!is_null($phone)){
-      $phoneLen = mb_strlen($phone);
-      if($phoneLen < 1 || $phoneLen > 64){
+    if(!is_null($inn)){
+      $innLen = mb_strlen($inn);
+      if($innLen < 8 || $innLen > 14){
         throw new InvalidArgumentException(sprintf(
-          'Length the "phone" should be "[0-64]" chars, "%s" given.',
-          $phoneLen
+          'Length the "inn" should be "[8-14]" chars, "%s" given.',
+          $innLen
         ));
       }
-      $this->phone = $phone;
+      $this->inn = $inn;
     }
-    if(is_null($this->email) && is_null($this->phone)){
-      throw new InvalidArgumentException('You must specify "email or phone"');
-    }
+    $this->paymentAddress = $paymentAddress;
   }
 
   /**
@@ -133,10 +134,10 @@ class Attributes implements JsonSerializableInterface{
   }
 
   /**
-   * @return string|null Телефон клиента.
+   * @return string|null INN компании
    */
-  public function getPhone(){
-    return $this->phone;
+  public function getInn(){
+    return $this->inn;
   }
 
   /**
@@ -144,14 +145,11 @@ class Attributes implements JsonSerializableInterface{
    */
   public function toJson(){
     $json = [
-      'sno' => $this->sno,
+        'email' => $this->email,
+        'sno' => $this->sno,
+        'inn' => $this->inn,
+        'payment_address' => $this->paymentAddress
     ];
-    if(!is_null($this->email)){
-      $json['email'] = $this->email;
-    }
-    if(!is_null($this->phone)){
-      $json['phone'] = $this->phone;
-    }
 
     return json_encode($json);
   }

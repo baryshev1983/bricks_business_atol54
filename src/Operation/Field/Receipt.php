@@ -10,11 +10,16 @@ use Bricks\Business\Atol54\Exception\InvalidArgumentException;
  * @author Artur Sh. Mamedbekov
  */
 class Receipt implements JsonSerializableInterface{
-  /**
-   * @var Attributes Атрибуты чека.
-   */
-  private $attributes;
-  
+    /**
+     * @var Client Атрибуты Клиента.
+     */
+    private $client;
+
+    /**
+     * @var Company Атрибуты компании.
+     */
+    private $company;
+
   /**
    * @var ItemList Товары.
    */
@@ -26,22 +31,31 @@ class Receipt implements JsonSerializableInterface{
   private $payments;
 
   /**
-   * @param Attributes $attributes Атрибуты чека.
+   * @param Client $client Атрибуты клиента.
+   * @param Company $company Атрибуты компании.
    * @param ItemList $items Товары.
    * @param PaymentList $payments Счета.
    */
-  public function __construct(Attributes $attributes, ItemList $items, PaymentList $payments){
-    $this->attributes = $attributes;
+  public function __construct(Client $client, Company $company, ItemList $items, PaymentList $payments)
+  {
+    $this->client = $client;
+    $this->company = $company;
     $this->items = $items;
     $this->payments = $payments;
   }
 
-  /**
-   * @return Attributes Атрибуты чека.
-   */
-  public function getAttributes(){
-    return $this->attributes;
-  }
+    /**
+     * @return Client Атрибуты компании.
+     */
+    public function getClient(){
+        return $this->client;
+    }
+    /**
+     * @return Company Атрибуты компании.
+     */
+    public function getCompany(){
+        return $this->company;
+    }
 
   /**
    * @return ItemList Товары.
@@ -67,10 +81,12 @@ class Receipt implements JsonSerializableInterface{
   /**
    * {@inheritdoc}
    */
-  public function toJson(){
+  public function toJson()
+  {
     return sprintf(
-      '{"attributes":%s,"items":%s,"payments":%s,"total":%01.2f}',
-      $this->attributes->toJson(),
+      '{"client":%s,"company":%s,"items":%s,"payments":%s,"total":%01.2f}',
+      $this->client->toJson(),
+      $this->company->toJson(),
       $this->items->toJson(),
       $this->payments->toJson(),
       $this->getSum()
