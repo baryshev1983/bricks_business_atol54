@@ -45,7 +45,7 @@ class Token implements JsonUnserializableInterface{
 
     if (isset($json->error) && $json->error !== null) {
         $exceptionClass = isset(self::$codeMap[$json->error->code])
-            ? new self::$codeMap[$json->code]
+            ? new self::$codeMap[$json->error->code]
             : new \RuntimeException('Ошибка авторизации');
         throw new $exceptionClass;
     } else {
@@ -80,3 +80,4 @@ class Token implements JsonUnserializableInterface{
     return $this->getToken();
   }
 }
+
