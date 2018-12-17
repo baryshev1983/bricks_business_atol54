@@ -28,18 +28,19 @@ class Client implements JsonSerializableInterface{
    */
   public function __construct($email = null, $phone = null)
   {
-    if(is_null($email)){
-      throw new InvalidArgumentException('You must specify "email or phone"');
-    } else {
-      $emailLen = mb_strlen($email);
-      if($emailLen < 1 || $emailLen > 64){
-        throw new InvalidArgumentException(sprintf(
-          'Length the "email" should be "[0-64]" chars, "%s" given.',
-          $emailLen
-        ));
-      }
-      $this->email = $email;
+    if (is_null($email)) {
+        throw new InvalidArgumentException('You must specify "email or phone"');
     }
+    $emailLen = mb_strlen($email);
+    if ($emailLen < 1 || $emailLen > 64) {
+        throw new InvalidArgumentException(
+            sprintf(
+                'Length the "email" should be "[0-64]" chars, "%s" given.',
+                $emailLen
+            )
+        );
+    }
+    $this->email = $email;
     $this->phone = $phone;
   }
 

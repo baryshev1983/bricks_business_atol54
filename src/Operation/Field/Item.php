@@ -12,14 +12,44 @@ use Bricks\Business\Atol54\Exception\InvalidArgumentException;
 class Item implements JsonSerializableInterface
 {
     /**
-     * Типы Оплаты
+     * Типы Оплаты "Предоплата 100%. Полная предварительная оплата до момента
+     * передачипредмета расчета"
      */
     const PAYMENT_FULL_PREPAYMENT = 'full_prepayment';
+
+    /**
+     * Типы Оплаты "Предоплата. Частичная
+     * предварительная оплата до момента передачипредмета расчета"
+     */
     const PAYMENT_PREPAYMENT = 'prepayment';
+
+    /**
+     * Типы Оплаты "Аванс"
+     */
     const PAYMENT_ADVANCE = 'advance';
+
+    /**
+     * Типы Оплаты "Полный расчет. Полная оплата, в том числе с учетом аванса
+     * (предварительной оплаты) в момент передачи предмета расчета"
+     */
     const PAYMENT_FULL_PAYMENT = 'full_payment';
+
+    /**
+     * Типы Оплаты "Частичный расчет и кредит. Частичная оплата предмета расчета в момент
+     * его передачи с последующей оплатой в кредит"
+     */
     const PAYMENT_PARTIAL_PAYMENT = 'partial_payment';
+
+    /**
+     * Типы Оплаты "Передача в кредит. Передача предмета расчета без его оплаты в момент его
+     * передачи с последующей оплатой в кредит."
+     */
     const PAYMENT_CREDIT = 'credit';
+
+    /**
+     * Типы Оплаты "Оплата кредита. Оплата предмета расчета после его передачи с оплатой
+     * в кредит (оплата кредита)"
+     */
     const PAYMENT_CREDIT_PAYMENT = 'credit_payment';
 
     const PAYMENT_METHODS = [

@@ -2,6 +2,7 @@
 namespace Bricks\Business\Atol54\Auth;
 
 use stdClass;
+use RuntimeException;
 use Bricks\Business\Atol54\JsonUnserializableInterface;
 use Bricks\Business\Atol54\Exception\InvalidArgumentException;
 use Bricks\Business\Atol54\Auth\Exception\BadResponseException;
@@ -46,7 +47,7 @@ class Token implements JsonUnserializableInterface{
     if (isset($json->error) && $json->error !== null) {
         $exceptionClass = isset(self::$codeMap[$json->error->code])
             ? new self::$codeMap[$json->error->code]
-            : new \RuntimeException('Ошибка авторизации');
+            : new RuntimeException('Ошибка авторизации');
         throw new $exceptionClass;
     } else {
         return new Token($json->token);

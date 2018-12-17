@@ -7,6 +7,7 @@ use Bricks\Business\Atol54\Exception\InvalidArgumentException;
 /**
  * Атрибуты чека.
  *
+ * @author Artur Sh. Mamedbekov
  * @author Vladimir Baryshev
  */
 class Company implements JsonSerializableInterface{
@@ -53,7 +54,7 @@ class Company implements JsonSerializableInterface{
   private $email;
 
   /**
-   * @var string|null INN компании
+   * @var string|null ИНН компании
    */
   private $inn;
 
@@ -106,9 +107,9 @@ class Company implements JsonSerializableInterface{
     }
     if(!is_null($inn)){
       $innLen = mb_strlen($inn);
-      if($innLen < 8 || $innLen > 14){
+      if ($innLen !== 10 && $innLen !== 12) {
         throw new InvalidArgumentException(sprintf(
-          'Length the "inn" should be "[8-14]" chars, "%s" given.',
+          'Length the "inn" should be "[10, 12]" chars, "%s" given.',
           $innLen
         ));
       }
