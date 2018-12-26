@@ -52,6 +52,45 @@ class Item implements JsonSerializableInterface
      */
     const PAYMENT_CREDIT_PAYMENT = 'credit_payment';
 
+    /** товар */
+    const PAYMENT_BY_COMMODITY = 'commodity';
+
+    /** подакцизный товар */
+    const PAYMENT_BY_EXCISE = 'excise';
+
+    /** работа */
+    const PAYMENT_BY_JOB = 'job';
+
+    /** услуга */
+    const PAYMENT_BY_SERVICE = 'service';
+
+    /** ставка в азартной игре  */
+    const PAYMENT_BY_GAMBLING_BET = 'gambling_bet';
+
+    /** выигрыш в азартной игре */
+    const PAYMENT_BY_GAMBLING_PRIZE = 'gambling_prize';
+
+    /** лотерейный билет */
+    const PAYMENT_BY_LOTTERY = 'lottery';
+
+    /** выигрыш в лотерею */
+    const PAYMENT_BY_LOTTERY_PRIZE = 'lottery_prize';
+
+    /** результаты интеллектуальной деятельности */
+    const PAYMENT_BY_INTELLECTUAL_ACTIVITY = 'intellectual_activity';
+
+    /** платеж */
+    const PAYMENT_BY_PAYMENT = 'payment';
+
+    /** агентское вознаграждение */
+    const PAYMENT_BY_AGENT_COMMISSION = 'agent_commission';
+
+    /** несколько вариантов */
+    const PAYMENT_BY_COMPOSITE = 'composite';
+
+    /** другое */
+    const PAYMENT_BY_ANOTHER = 'another';
+
     const PAYMENT_METHODS = [
         self::PAYMENT_FULL_PREPAYMENT,
         self::PAYMENT_PREPAYMENT,
@@ -178,17 +217,19 @@ class Item implements JsonSerializableInterface
     return $this->vat;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function toJson(){
+    /**
+     * @return string
+     */
+  public function toJson(): string
+  {
     return sprintf(
-      '{"name":"%s","quantity":%01.3f,"price":%01.2f,"sum":%01.2f,"payment_method":"%s","vat":%s}',
+      '{"name":"%s","quantity":%01.3f,"price":%01.2f,"sum":%01.2f,"payment_method":"%s","payment_object":"%s","vat":%s}',
       addcslashes(addcslashes($this->name, '/'), '"'),
       $this->quantity,
       $this->price,
       $this->sum,
       $this->paymentMethod,
+      self::PAYMENT_BY_ANOTHER,
       $this->vat->toJson()
     );
   }
